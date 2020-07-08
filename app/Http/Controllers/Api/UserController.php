@@ -48,9 +48,8 @@ class UserController extends Controller
         //
          $request->validate([
             "name" => "required|min:3|max:20",
-            "email" => "required|string|email|max:255|unique:users",
             "ID_NO" => "required|min:3|max:20",
-            "password" => "required|string|min:8|confirmed",
+            "password" => "required|string|min:8",
         ]);
 
         $user = User::create([
@@ -103,7 +102,6 @@ class UserController extends Controller
         //echo "$request";die();
         $request->validate([
             "name" => "required|min:3|max:20",
-            "email" => "required|string|email|max:255|unique:users",
             "ID_NO" => "required|min:3|max:20",
         ]);
 
@@ -139,24 +137,28 @@ class UserController extends Controller
 
     public function checkAuth(Request $request)
     {
-      $ID_NO = $request->ID_NO;
-      $password = $request->password;
-      $user = DB::table('users')->where([
-                ['ID_NO', '=', $ID_NO],
-                ['password', '=', $password],
-            ])->get();
+        $request->validate([
+            "ID_NO" => "required|min:3|max:20",
+            "password" => "required|string|min:8|confirmed",
+        ]);
+          $ID_NO = $request->ID_NO;
+          $password = $request->password;
+          $user = DB::table('users')->where([
+                    ['ID_NO', '=', $ID_NO],
+                    ['password', '=', $password],
+                ])->get();
 
-      if (count($user) >0) {
-          return response()->json([
-            'user' => $user,
-            'message' => 'Login Successfully'
-          ],200);
-      } else {
-          return response()->json([
-            'user' => $user,
-            'message' => 'Invaild ID NO Or Password'
-          ],200);
-      }
+          if (count($user) >0) {
+              return response()->json([
+                'user' => $user,
+                'message' => 'Login Successfully'
+              ],200);
+          } else {
+              return response()->json([
+                'user' => $user,
+                'message' => 'Invaild ID NO Or Password'
+              ],200);
+          }
     }
     
 }
