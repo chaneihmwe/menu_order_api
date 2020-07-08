@@ -8,6 +8,7 @@ use App\User;
 use App\Category;
 use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
@@ -56,7 +57,7 @@ class UserController extends Controller
             "name" => request('name') ,
             "email" => request('email'),
             "ID_NO" => request('ID_NO'),
-            "password" => Hash::make(request('password')),
+            "password" => request('password'),
         ]);
 
         $user = new UserResource($user);
@@ -110,13 +111,7 @@ class UserController extends Controller
         $user->name=$request->name;
         $user->email=$request->email;
         $user->ID_NO=$request->ID_NO;
-        if ($request->new_password) {
-            $password=Hash::make($request->new_password);
-        }
-        else{
-            $password = $old_password;
-        }
-        $user->password=$password;
+        $user->password=$request->$password;
         $user->save();
 
         return response()->json([
@@ -141,4 +136,27 @@ class UserController extends Controller
             'message'   =>  'Successfully User deleted!!'
         ],200);
     }
+
+    public function checkAuth(Request $request)
+    {
+      $ID_NO = $request->ID_NO;
+      $password = $request->password;
+      $user = DB::table('users')->where([
+                ['ID_NO', '=', $ID_NO],
+                ['password', '=', $password],
+            ])->get();
+
+      if (count($user) >0) {
+          return response()->json([
+            'user' => $user,
+            'message' => 'Login Successfully'
+          ],200);
+      } else {
+          return response()->json([
+            'user' => $user,
+            'message' => 'Invaild ID NO Or Password'
+          ],200);
+      }
+    }
+    
 }

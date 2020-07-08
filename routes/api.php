@@ -26,4 +26,5 @@ Route::group(['prefix' => 'setup'], function()
 	Route::resource('menu','Api\MenuController');
 	Route::resource('order','Api\OrderController');
 	Route::resource('user','Api\UserController');
+	Route::post('check_auth','Api\UserController@checkAuth')->name('check_auth');
 });
