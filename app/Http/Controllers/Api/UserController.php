@@ -48,14 +48,13 @@ class UserController extends Controller
         //
          $request->validate([
             "name" => "required|min:3|max:20",
-            "ID_NO" => "required|min:3|max:20",
             "password" => "required|string|min:8",
         ]);
-
+        $ID_NO = mt_rand(10000000,99999999);
         $user = User::create([
             "name" => request('name') ,
             "email" => request('email'),
-            "ID_NO" => request('ID_NO'),
+            "ID_NO" => $ID_NO,
             "password" => md5(request('password')),
         ]);
 
@@ -143,7 +142,7 @@ class UserController extends Controller
     public function checkAuth(Request $request)
     {
         $request->validate([
-            "ID_NO" => "required|min:3|max:20",
+            "ID_NO" => "required|min:8",
             "password" => "required|string|min:8",
         ]);
 
