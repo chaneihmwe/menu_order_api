@@ -139,7 +139,7 @@ class UserController extends Controller
     {
         $request->validate([
             "ID_NO" => "required|min:3|max:20",
-            "password" => "required|string|min:8|confirmed",
+            "password" => "required|string|min:8",
         ]);
           $ID_NO = $request->ID_NO;
           $password = $request->password;
