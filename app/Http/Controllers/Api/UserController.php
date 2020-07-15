@@ -48,7 +48,6 @@ class UserController extends Controller
         //
          $request->validate([
             "name" => "required|min:3|max:20",
-            "password" => "required|string|min:8",
         ]);
         $ID_NO = mt_rand(10000000,99999999);
         $user = User::create([
@@ -56,6 +55,7 @@ class UserController extends Controller
             "email" => request('email'),
             "ID_NO" => $ID_NO,
             "password" => md5(request('password')),
+            "role" => 'waiter',
         ]);
 
         $user = new UserResource($user);
@@ -114,6 +114,7 @@ class UserController extends Controller
             $password = $request->old_password;
         }
         $user->password=$password;
+        $user->role= 'waiter';
         $user->save();
 
         return response()->json([
@@ -146,7 +147,7 @@ class UserController extends Controller
             "password" => "required|string|min:8",
         ]);
 
-          $ID_NO = $request->ID_NO;
+          $ID_NO = $requestst->ID_NO;
           $password = md5($request->password);
           $user = DB::table('users')->where([
                     ['ID_NO', '=', $ID_NO],

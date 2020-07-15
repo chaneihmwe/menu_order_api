@@ -52,6 +52,11 @@ class OrderController extends Controller
           "table_id" => "required",
           "total_price" => "required|min:4|max:255",
         ]);
+        $json = json_encode(array(
+            array("menu_id"=>"1", "qty"=>"4"),
+            array("menu_id"=>"2", "qty"=>"5"),
+        ));
+
         $mytime = Carbon::now();
         $day = $mytime->day;
         $month = $mytime->month;
@@ -75,9 +80,6 @@ class OrderController extends Controller
                   }
             }
 
-        //   return $voucher_no;
-        
-            
         
         $orders = Order::create([
             'voucher_no'      => $voucher_no,
@@ -86,17 +88,14 @@ class OrderController extends Controller
             'total_price'=> request('total_price'),
         ]);
       
-        $order_details = array(
-            array("1","2","20000"),
-            array("2","2","40000")
-        );
+        $order_details = json_decode($json);
         
         foreach ($order_details as $order_detail) {
                 OrderDetail::create([
                 'voucher_no'  => $voucher_no,
-                'menu_id'   => $order_detail[0],
-                'qty'  => $order_detail[1],
-            ]);
+                'menu_id'   => $order_detail->menu_id,
+                'qty'  => $order_detail->qty,
+                    ]);
                 }
         return response()->json([
             'orders'  =>  $orders,
