@@ -52,7 +52,6 @@ class UserController extends Controller
         $ID_NO = mt_rand(10000000,99999999);
         $user = User::create([
             "name" => request('name') ,
-            "email" => request('email'),
             "ID_NO" => $ID_NO,
             "password" => md5(request('password')),
             "role" => 'waiter',
@@ -101,12 +100,11 @@ class UserController extends Controller
         //echo "$request";die();
         $request->validate([
             "name" => "required|min:3|max:20",
-            "ID_NO" => "required|min:3|max:20",
+            "ID_NO" => "required|min:8|max:20",
         ]);
 
         $user= User::find($id);
         $user->name=$request->name;
-        $user->email=$request->email;
         $user->ID_NO=$request->ID_NO;
         if ($request->new_password) {
             $password = md5($request->new_password);
@@ -147,7 +145,7 @@ class UserController extends Controller
             "password" => "required|string|min:8",
         ]);
 
-          $ID_NO = $requestst->ID_NO;
+          $ID_NO = $request->ID_NO;
           $password = md5($request->password);
           $user = DB::table('users')->where([
                     ['ID_NO', '=', $ID_NO],
@@ -161,7 +159,6 @@ class UserController extends Controller
               ],200);
           } else {
               return response()->json([
-                'user' => $user,
                 'message' => 'Invaild ID NO Or Password'
               ],200);
           }

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\OrderDetail;
 use App\Order;
+use App\Table;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
@@ -52,10 +53,10 @@ class OrderController extends Controller
           "table_id" => "required",
           "total_price" => "required|min:4|max:255",
         ]);
-        $json = json_encode(array(
+        /*$json = json_encode(array(
             array("menu_id"=>"1", "qty"=>"4"),
             array("menu_id"=>"2", "qty"=>"5"),
-        ));
+        ));*/
 
         $mytime = Carbon::now();
         $day = $mytime->day;
@@ -80,15 +81,9 @@ class OrderController extends Controller
                   }
             }
 
-        
-        $orders = Order::create([
-            'voucher_no'      => $voucher_no,
-            'user_id'   => request('user_id'),
-            'table_id'   => request('table_id'),
-            'total_price'=> request('total_price'),
-        ]);
-      
-        $order_details = json_decode($json);
+        $voucher_no = \uniqid();
+
+        $order_details = json_decode(request('order_details'));
         
         foreach ($order_details as $order_detail) {
                 OrderDetail::create([
@@ -96,7 +91,19 @@ class OrderController extends Controller
                 'menu_id'   => $order_detail->menu_id,
                 'qty'  => $order_detail->qty,
                     ]);
-                }
+        }
+
+        $orders = Order::create([
+            'voucher_no'      => $voucher_no,
+            'user_id'   => request('user_id'),
+            'table_id'   => request('table_id'),
+            'total_price'=> request('total_price'),
+        ]);
+
+        $table = Table::find(request('table_id'));
+        $table->status = 1;
+        $table->save();
+
         return response()->json([
             'orders'  =>  $orders,
             'message'   =>  'Successfully Order Added!'
@@ -146,9 +153,17 @@ class OrderController extends Controller
     {
         //
         $order = Order::find($id);
-        $order->status = 0;
+        $order->status = 1;
+        $order->save();
+
+        $table_id = $order->table_id;
+        $table = Table::find($table_id);
+        $table->status = 0;
+        $table->save();
+
         return response()->json([
-            'message'   =>  'Successfully Order Checkout!!'
+            'message'   =>  'Successfully Order Checkout!!',
+            'messageTwo'   =>  ' Table is available now!!'
         ],200);
     }
 
